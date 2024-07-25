@@ -4,21 +4,19 @@ import dayjs from 'dayjs';
 
 dotenv.config();
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-
-console.log('TWILIO_ACCOUNT_SID:', accountSid);
-console.log('TWILIO_AUTH_TOKEN:', authToken);
-
-const client = twilio(accountSid, authToken);
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 export async function handler(event) {
   if (event.httpMethod === 'POST') {
+    // Veriyi JSON formatında al
     const { firstName, lastName, birthdate, city, services, phoneNumber, instagram } = JSON.parse(event.body);
+
+    // Tarih formatını dönüştür
     const formattedBirthdate = dayjs(birthdate).format('DD/MM/YYYY');
 
     try {
-      const message = await client.messages.create({
+      // WhatsApp mesajını gönder
+      await client.messages.create({
         body: `
           Ad: ${firstName}
           Soyad: ${lastName}
