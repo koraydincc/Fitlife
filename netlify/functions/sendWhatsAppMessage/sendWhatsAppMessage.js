@@ -4,17 +4,32 @@ import dayjs from 'dayjs';
 
 dotenv.config();
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const whatsappFrom = process.env.TWILIO_WHATSAPP_FROM;
+const whatsappTo = process.env.WHATSAPP_TO;
+
+if (!accountSid || !authToken || !whatsappFrom || !whatsappTo) {
+  throw new Error('Missing Twilio configuration in environment variables.');
+}
+
+const client = twilio(accountSid, authToken);
 
 export async function handler(event) {
   if (event.httpMethod === 'POST') {
-
-
-    const { firstName, lastName, birthdate, city, services, phoneNumber, instagram } = JSON.parse(event.body);
-    const formattedBirthdate = dayjs(birthdate).format('DD/MM/YYYY');
-
     try {
-      await client.messages.create({
+      const { firstName, lastName, birthdate, city, services, phoneNumber, instagram } = JSON.parse(event.body);
+      const formattedBirthdate = dayjs(birthdate).format('DD/MM/YYYY');
+
+      // Validate the data
+      if (!firstName || !lastName || !birthdate || !city || !services || !phoneNumber) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ message: 'Eksik veya geçersiz veri' }),
+        };
+      }
+
+      const message = await client.messages.create({
         body: `
           Ad: ${firstName}
           Soyad: ${lastName}
@@ -24,9 +39,12 @@ export async function handler(event) {
           Telefon: ${phoneNumber}
           Instagram: ${instagram || 'Belirtilmemiş'}
         `,
-        from: process.env.TWILIO_WHATSAPP_FROM, 
-        to: process.env.WHATSAPP_TO, 
+        from: `whatsapp:${whatsappFrom}`,
+        to: `whatsapp:${whatsappTo}`,
+        
       });
+
+      console.log('WhatsApp mesajı gönderildi:', message.sid);
 
       return {
         statusCode: 200,
