@@ -1,0 +1,21 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Ankara",
+			"country": {
+				"code": "TR",
+				"name": "Türkiye"
+			},
+			"subdivision": {
+				"code": "06",
+				"name": "Ankara"
+			},
+			"timezone": "Europe/Istanbul",
+			"latitude": 39.9786,
+			"longitude": 32.8262
+		},
+		"timestamp": 1721915385889
+	},
+	"siteId": "597c0e87-de5c-448a-8751-c5955ba9c6ff",
+	"promptVSCodeSettings": true
+}
