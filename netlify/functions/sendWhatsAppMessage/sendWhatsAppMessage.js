@@ -5,17 +5,13 @@ import dayjs from 'dayjs';
 dotenv.config();
 
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-
 export async function handler(event) {
   if (event.httpMethod === 'POST') {
-    // Veriyi JSON formatında al
     const { firstName, lastName, birthdate, city, services, phoneNumber, instagram } = JSON.parse(event.body);
 
-    // Tarih formatını dönüştür
     const formattedBirthdate = dayjs(birthdate).format('DD/MM/YYYY');
 
     try {
-      // WhatsApp mesajını gönder
       await client.messages.create({
         body: `
           Ad: ${firstName}
